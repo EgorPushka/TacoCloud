@@ -1,0 +1,95 @@
+.header {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.header img {
+    max-width: 200px;
+    height: auto;
+    margin-top: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px;
+}
+
+.ingredient-group {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.ingredient-group h3 {
+    margin-top: 0;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin-top: 15px;
+    background-color: #2d9cdb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1c87c9;
+}
+
+#another {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #2d9cdb;
+    text-decoration: underline;
+    grid-column: 1 / -1;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.validationError {
+    color: red;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #2d9cdb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1c87c9;
+}
+
