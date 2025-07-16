@@ -7,11 +7,18 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
-public class TacoOrder {
+public class TacoOrder implements Serializable {
+
+    private static final long serialVersionId = 1L;
+
+    private Long id;
+    private Date placedAt;
 
     @NotBlank(message = "Delivery Name required")
     private String deliveryName;
@@ -24,7 +31,8 @@ public class TacoOrder {
     @NotBlank(message = "Zip Code is required")
     private String deliveryZip;
 
-    @CreditCardNumber(message = "Invalid Card Number")
+//    @CreditCardNumber(message = "Invalid Card Number")
+    @NotBlank(message = "Number is required")
     private String ccNumber;
     @NotNull(message = "Expiration date is required")
     @Pattern(
