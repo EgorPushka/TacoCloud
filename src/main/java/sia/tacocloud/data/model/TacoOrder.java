@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import lombok.Data;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
+import sia.tacocloud.util.TacoUDRUtils;
 
 @Data
 @Table("orders")
@@ -42,7 +42,6 @@ public class TacoOrder implements Serializable {
   @NotBlank(message = "Zip Code is required")
   private String deliveryZip;
 
-  //    @CreditCardNumber(message = "Invalid Card Number")
   @NotBlank(message = "Number is required")
   private String ccNumber;
 
@@ -57,6 +56,7 @@ public class TacoOrder implements Serializable {
   private List<TacoUDT> tacos = new ArrayList<>();
 
   public void addTaco(Taco taco) {
-
+    this.tacos.add(TacoUDRUtils.toTacoUDT(taco));
   }
+
 }

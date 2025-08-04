@@ -13,6 +13,7 @@ import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
+import sia.tacocloud.util.TacoUDRUtils;
 
 @Table("tacos")
 @Data
@@ -39,7 +40,7 @@ public class Taco {
 //  @Column(name = "taco_order_key", nullable = false)
 //  private Integer orderKey;
 //
-//  public void addIngredient(Ingredient ingredient) {
-//    this.ingredients.add(ingredient);
-//  }
+  public void addIngredient(Ingredient ingredient) {
+    this.ingredients.add(TacoUDRUtils.toIngredientUDT(ingredient));
+  }
 }
