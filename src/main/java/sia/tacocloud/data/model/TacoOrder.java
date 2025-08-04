@@ -1,7 +1,7 @@
 package sia.tacocloud.data.model;
 
 
-import jakarta.persistence.*;
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,17 +10,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import lombok.Data;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+import sia.tacocloud.util.TacoUDRUtils;
 
 @Data
-@Entity
+@Table("orders")
 public class TacoOrder implements Serializable {
 
   private static final long serialVersionId = 1L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  @PrimaryKey
+  private UUID id = Uuids.timeBased();
   private Date placedAt = new Date();
 
   @NotBlank(message = "Delivery Name required")
@@ -38,7 +42,6 @@ public class TacoOrder implements Serializable {
   @NotBlank(message = "Zip Code is required")
   private String deliveryZip;
 
-  //    @CreditCardNumber(message = "Invalid Card Number")
   @NotBlank(message = "Number is required")
   private String ccNumber;
 
@@ -47,15 +50,13 @@ public class TacoOrder implements Serializable {
   private String ccExpiration;
 
   @Digits(integer = 3, fraction = 0, message = "Invalid CVV")
-  @Column(name = "cc_cvv")
   private String ccCVV;
 
-  @OneToMany(mappedBy="order", cascade=CascadeType.ALL)
-  private List<Taco> tacos = new ArrayList<>();
+  @Column("tacos")
+  private List<TacoUDT> tacos = new ArrayList<>();
 
   public void addTaco(Taco taco) {
-    taco.setOrder(this);
-    taco.setOrderKey(this.tacos.size());
-    this.tacos.add(taco);
+    this.tacos.add(TacoUDRUtils.toTacoUDT(taco));
   }
+
 }
