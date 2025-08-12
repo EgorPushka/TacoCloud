@@ -10,16 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # выдаем права на gradlew, делаем его исполняемым нужно для linux раннера github actions
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build & Test with coverage
-        run: ./gradlew clean test jacocoTestReport --no-daemon
-
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Диагностика — покажем, что пришло на раннер
+      - name: Show repo root
+        run: |
+          pwd
+          ls -la
+          echo "---- file gradlew ----"
+          file gradlew || true
+          echo "---- first line (visible CR if any) ----"
+          head -n 1 gradlew | cat -A || true
+
+      # На всякий случай лечим CRLF прямо на раннере
+      - name: Normalize line endings for gradlew (LF)
+        run: sed -i 's/\r$//' gradlew
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Ставим стабильную Java 21 для совместимости с Gradle
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -28,6 +39,12 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
+      # Маленькая проверка — печатаем версии
+      - name: Gradle and Java versions
+        run: |
+          ./gradlew --version
+          java -version
 
       - name: Build & Test with coverage
         run: ./gradlew clean test jacocoTestReport --no-daemon
@@ -38,7 +55,6 @@ jobs:
           name: jacoco-html
           path: build/reports/jacoco/test/html
 
-      # Комментарий в PR с кратким отчётом покрытия (без сторонних сервисов)
       - name: Jacoco PR Comment
         if: ${{ github.event_name == 'pull_request' }}
         uses: madrapps/jacoco-report@v1.7.1
