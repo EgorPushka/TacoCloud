@@ -1,0 +1,12 @@
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.14
+
+spring:
+  thymeleaf:
+    cache: false
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG

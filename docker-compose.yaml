@@ -1,0 +1,11 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: tacocloud-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: tacocloud
+    volumes:
+      - ./docker/mongo-init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
