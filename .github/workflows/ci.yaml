@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Диагностика — покажем, что пришло на раннер
+      # Диагностика — что в корне раннера
       - name: Show repo root
         run: |
           pwd
@@ -26,14 +26,13 @@ jobs:
           echo "---- first line (visible CR if any) ----"
           head -n 1 gradlew | cat -A || true
 
-      # На всякий случай лечим CRLF прямо на раннере
+      # На всякий случай лечим CRLF у gradlew и выдаём права
       - name: Normalize line endings for gradlew (LF)
         run: sed -i 's/\r$//' gradlew
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Ставим стабильную Java 24 для совместимости с Gradle
       - name: Set up JDK 24
         uses: actions/setup-java@v4
         with:
@@ -43,7 +42,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # Маленькая проверка — печатаем версии
       - name: Gradle and Java versions
         run: |
           ./gradlew --version
@@ -52,6 +50,7 @@ jobs:
       - name: Build & Test with coverage
         run: ./gradlew clean test jacocoTestReport --no-daemon
 
+      # Небольшая проверка, что XML реально сгенерён
       - name: List JaCoCo XML dir
         run: |
           ls -la build/reports/jacoco/test || true
@@ -62,33 +61,18 @@ jobs:
         run: |
           test -s build/reports/jacoco/test/jacocoTestReport.xml || (echo "No or empty jacocoTestReport.xml"; exit 1)
 
-      - name: Generate coverage summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
+      # ОДИН шаг: и summary в Actions, и комментарий в PR
+      - name: Jacoco Report (summary + PR comment)
+        uses: mikepenz/action-jacoco-report@v3
         with:
-          filename: build/reports/jacoco/test/jacocoTestReport.xml
-          badge: true
-          fail_below_min: false
-          format: markdown
-          hide_complexity: true
-          indicators: true
-          output: both
-          thresholds: '70 80'
-
-      - name: Write coverage to job summary
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+          jacoco-report-paths: build/reports/jacoco/test/jacocoTestReport.xml
+          title: 'Coverage Report'
+          update-comment: true
+          skip-if-empty: false
+          fail-on-coverage-decrease: false
 
       - name: Upload HTML coverage report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-html
           path: build/reports/jacoco/test/html
-
-      - name: Jacoco PR Comment
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: madrapps/jacoco-report@v1.7.1
-        with:
-          paths: build/reports/jacoco/test/jacocoTestReport.xml
-          token: ${{ github.token }}
-          title: 'Coverage Report'
-          min-coverage-overall: 0
-          min-coverage-changed-files: 0
