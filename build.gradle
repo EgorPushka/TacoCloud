@@ -42,7 +42,7 @@ tasks.named('test') {
 }
 
 jacoco {
-    toolVersion = '0.8.11'
+    toolVersion = '0.8.13'
 }
 
 jacocoTestReport {
@@ -54,7 +54,7 @@ jacocoTestReport {
     }
 }
 
-// Не обязательно. Если хочешь «красную лампу», когда покрытие ниже порога:
+// Если нужна «красную лампу», когда покрытие ниже порога:
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -64,5 +64,5 @@ jacocoTestCoverageVerification {
         }
     }
 }
-// Включи строку ниже, если хочешь падение сборки при недоборe покрытия
+// Раскоментируй ниже если хочешь падение сборки при недоборe покрытия
 // check.dependsOn jacocoTestCoverageVerification
