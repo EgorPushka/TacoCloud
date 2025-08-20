@@ -1,12 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Taco Cloud</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css"/>
 </head>
 <body>
-    <h1>Welcome to...</h1>
-    <img th:src="@{/images/TacoCloud.png}">
+<!-- Та же «карточка», что и на design: используем form-container -->
+<div class="form-container page-center">
+    <div class="header">
+        <h1>Welcome to...</h1>
+        <img th:src="@{/images/TacoCloud.png}" src="/images/TacoCloud.png" alt="Taco Cloud">
+    </div>
 
+    <!-- Неавторизован: Login + Registration -->
+    <div class="actions" sec:authorize="!isAuthenticated()">
+        <a class="btn" th:href="@{/login}" href="/login">Login</a>
+        <a class="btn btn-secondary" th:href="@{/registration}" href="/registration">Registration</a>
+    </div>
+
+    <!-- Авторизован: имя, ссылка к дизайну и Logout -->
+    <div class="actions" sec:authorize="isAuthenticated()">
+        <p>Вы вошли как <strong sec:authentication="name">user</strong></p>
+        <a class="btn" th:href="@{/design}" href="/design">Перейти к дизайну</a>
+
+        <form th:action="@{/logout}" action="/logout" method="post" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-outline">Logout</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
