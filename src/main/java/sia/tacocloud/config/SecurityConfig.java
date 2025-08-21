@@ -37,7 +37,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/orders", "/design").hasRole("USER")
+                    .requestMatchers("/design", "/orders","/orders/**").hasRole("USER")
                     .requestMatchers("/", "/**").permitAll()
             )
             .formLogin(Customizer.withDefaults()) // use default form
