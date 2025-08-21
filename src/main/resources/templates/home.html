@@ -8,17 +8,18 @@
     <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css"/>
 </head>
 <body>
-<!-- Та же «карточка», что и на design: используем form-container -->
+<!-- Тоже что и на на design - form-container -->
 <div class="form-container page-center">
     <div class="header">
         <h1>Welcome to...</h1>
         <img th:src="@{/images/TacoCloud.png}" src="/images/TacoCloud.png" alt="Taco Cloud">
     </div>
 
-    <!-- Неавторизован: Login + Registration -->
+    <!-- For  Login + Registration -->
     <div class="actions" sec:authorize="!isAuthenticated()">
         <a class="btn" th:href="@{/login}" href="/login">Login</a>
         <a class="btn btn-secondary" th:href="@{/registration}" href="/registration">Registration</a>
+        <a class="btn" th:href="@{/oauth2/authorization/github}" href="/oauth2/authorization/github">Sign in with GitHub</a>
     </div>
 
     <!-- Авторизован: имя, ссылка к дизайну и Logout -->

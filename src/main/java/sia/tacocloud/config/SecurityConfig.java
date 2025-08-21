@@ -13,10 +13,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import sia.tacocloud.data.repository.UserRepository;
+import sia.tacocloud.service.OAuth2LoginUserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -34,13 +36,14 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuth2LoginUserService oAuth2LoginUserService) throws Exception {
     return http
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/design", "/orders","/orders/**").hasRole("USER")
                     .requestMatchers("/", "/**").permitAll()
             )
             .formLogin(Customizer.withDefaults()) // use default form
+            .oauth2Login(oauth -> oauth.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2LoginUserService)))
             .logout(Customizer.withDefaults()) // use default form
             // off csrf for h2 console
             .csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()))
