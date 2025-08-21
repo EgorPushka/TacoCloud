@@ -1,15 +1,16 @@
 package sia.tacocloud.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import sia.tacocloud.data.dto.DesignTacoFrom;
 import sia.tacocloud.data.model.Ingredient;
-import sia.tacocloud.data.model.IngredientRef;
 import sia.tacocloud.data.model.Taco;
 import sia.tacocloud.data.model.TacoOrder;
 import sia.tacocloud.data.repository.IngredientRepository;
@@ -25,22 +26,11 @@ public class DesignTacoController {
 
   @ModelAttribute
   public void addIngredientsToModel(Model model) {
-    //        var ingredients = Arrays.asList(
-    //                new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP),
-    //                new Ingredient("COTO", "Corn Tortilla", Ingredient.Type.WRAP),
-    //                new Ingredient("GRBF", "Ground Beef", Ingredient.Type.PROTEIN),
-    //                new Ingredient("CARN", "Carnitas", Ingredient.Type.PROTEIN),
-    //                new Ingredient("TMTO", "Diced Tomatoes", Ingredient.Type.VEGGIES),
-    //                new Ingredient("LETC", "Lettuce", Ingredient.Type.VEGGIES),
-    //                new Ingredient("CHED", "Cheddar", Ingredient.Type.CHEESE),
-    //                new Ingredient("JACK", "Monterrey Jack", Ingredient.Type.CHEESE),
-    //                new Ingredient("SLSA", "Salsa", Ingredient.Type.SAUCE),
-    //                new Ingredient("SRCR", "Sour Cream", Ingredient.Type.SAUCE)
-    //        );
     var ingredients = ingredientRepository.findAll();
-    var types = Ingredient.Type.values();
-    for (var type : types) {
-      model.addAttribute(type.toString().toLowerCase(), filterByTypes(ingredients, type));
+    var byType = ingredients.stream().collect(Collectors.groupingBy(Ingredient::getType));
+    for (var type : Ingredient.Type.values()) {
+      model.addAttribute(
+          type.toString().toLowerCase(), byType.getOrDefault(type, Collections.emptyList()));
     }
   }
 
@@ -49,9 +39,9 @@ public class DesignTacoController {
     return new TacoOrder();
   }
 
-  @ModelAttribute(name = "taco")
-  public Taco taco() {
-    return new Taco();
+  @ModelAttribute(name = "tacoForm")
+  public DesignTacoFrom tacoForm() {
+    return new DesignTacoFrom();
   }
 
   @GetMapping
@@ -60,16 +50,25 @@ public class DesignTacoController {
   }
 
   @PostMapping
-  public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+  public String processTaco(
+      @Valid @ModelAttribute("tacoForm") DesignTacoFrom form,
+      Errors errors,
+      @ModelAttribute TacoOrder tacoOrder) {
+
     if (errors.hasErrors()) {
       return "design";
     }
+
+    var ingredients = ingredientRepository.findAllById(form.getIngredientIds());
+
+    Taco taco = new Taco();
+    taco.setName(form.getName());
+    taco.setIngredients(ingredients);
+
     tacoOrder.addTaco(taco);
     log.info("Processing Taco: {}", taco);
-    return "redirect:/orders/current";
-  }
 
-  private Iterable<Ingredient> filterByTypes(List<Ingredient> ingredients, Ingredient.Type type) {
-    return ingredients.stream().filter(t -> t.getType().equals(type)).toList();
+    // sessionStatus.setComplete(); if session end now
+    return "redirect:/orders/current";
   }
 }

@@ -21,7 +21,7 @@ public class Taco {
   private Date createdAt = new Date();
 
   @NotNull
-  @Size(min = 5, message = "Name must be at least 5 char")
+  @Size(min = 3, message = "Name must be at least 5 char")
   private String name;
 
   @NotNull
